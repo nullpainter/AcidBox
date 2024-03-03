@@ -87,7 +87,7 @@ inline void handleCC(uint8_t inChannel, uint8_t cc_number, uint8_t cc_value) {
       Reverb.SetTime(cc_value * MIDI_NORM);
       break;
     case CC_ANY_REVERB_LVL:
-     DEBF("Set reverb level %d\r\n", cc_value);
+      DEBF("Set reverb level %d\r\n", cc_value);
       Reverb.SetLevel(cc_value * MIDI_NORM);
       break;
 #endif

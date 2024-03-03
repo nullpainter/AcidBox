@@ -454,7 +454,9 @@ static void instr_noteon(byte instr, byte value, byte do_glide, byte do_accent) 
 
 void sequencer_step(byte step) {
 #ifdef MIDI_RAMPS
-  do_midi_ramps();
+  if (midiRampsEnabled) {
+    do_midi_ramps();
+  }
 #endif
 #ifdef DEBUG_JUKEBOX_
   DEBF("midi step %d\r\n", step);
@@ -1183,87 +1185,11 @@ static void init_instruments() {
   }
 }
 
-/*
-   Main program
-*/
-
-/*
-  void setup() {
-  init_midi();
-  for (int i = 0; i < ButLast; i++) {
-    init_button(&buttons[i], button_pins[i]);
-  }
-  init_instruments();
-  init_patterns();
-  }
-*/
-
 void start_midi_clock() {
 }
 
 void run_ui() {
      int8_t source_memory = -1;
-
-  //   // If memory button is pressed, then it is a source_memory
-  //   for (int i = 0; i < NumMemories; i++) {
-  //     if (is_pressed(ButMem1 + i) && !just_pressed(ButMem1 + i)) {
-  //       source_memory = i;
-  //     }
-  //   }
-
-  //   // If a memory button is pressed, then switch to it.
-  //   // But if another memory button is pressed, then copy one to another.
-  //   for (int i = 0; i < NumMemories; i++) {
-  //     if (just_pressed(ButMem1 + i)) {
-  //       if (source_memory >= 0) {
-  // #ifdef DEBUG_JUKEBOX
-  //         DEBF("copy %d to %d\r\n", source_memory, i);
-  // #endif
-  //         memcpy(&memories[i], &memories[source_memory], sizeof(memories[0]));
-  //       } else {
-  // #ifdef DEBUG_JUKEBOX
-  //         DEBF("switching to memory %d", i);
-  // #endif
-  //         cur_memory = i;
-  //       }
-  //     }
-  //   }
-
-  //   // Handle pattern generation
-  //   if (just_pressed(ButPat1)) {
-  //     mem_generate_melody_and_seed(cur_memory, 0);
-  //     print_memory(cur_memory);
-  //   }
-  //   if (just_pressed(ButPat1 + 1)) {
-  //     mem_generate_melody_and_seed(cur_memory, 1);
-  //     print_memory(cur_memory);
-  //   }
-  //   if (just_pressed(ButNotes)) {
-  //     mem_generate_note_set(cur_memory);
-  //     print_memory(cur_memory);
-  //   }
-  //   if (just_pressed(ButDrums)) {
-  //     mem_generate_drums(cur_memory, DrumStraight);
-  //     print_memory(cur_memory);
-  //   }
-
-  //   // Handle play
-  //   if (just_pressed(ButPlay)) {
-  //     if (midi_playing) {
-  // #ifdef DEBUG_JUKEBOX
-  //       DEBUG("stopping midi");
-  // #endif
-  //       do_midi_stop();
-  //     } else {
-  // #ifdef DEBUG_JUKEBOX
-  //       DEBF("starting midi clock, dt=%lu", midi_tick_ms);
-  // #endif
-  //       last_midi_tick = now;
-  //       do_midi_start();
-  //       do_midi_tick();
-  //     }
-  //   }
-
 
   buttonHeld held;
   held = getButtonHeld();

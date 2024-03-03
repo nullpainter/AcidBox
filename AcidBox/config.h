@@ -47,7 +47,7 @@ const uint8_t POT_PINS[POT_NUM] = {34, 35, 36};
 
 float bpm = 130.0f;
 
-static bool midiRampsEnabled = true;  //Matt TODO does this need to be static?
+bool midiRampsEnabled = true;
 
 #define MAX_CUTOFF_FREQ 4000.0f
 #define MIN_CUTOFF_FREQ 250.0f
