@@ -1,0 +1,14 @@
+#pragma once
+
+// Copied from AcidBox
+#include "libraries/midi_config.h"
+
+//#define DEBUG
+
+// MIDI channels for keyup and keydown events
+#define KEY_DOWN_CHANNEL 1
+#define KEY_UP_CHANNEL 2
+
+// MIDI value ranges
+#define MIN_MIDI_VAL 0
+#define MAX_MIDI_VAL 127
