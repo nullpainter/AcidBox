@@ -19,8 +19,6 @@ void setup() {
 #ifdef DEBUG
   Serial.begin(115200);
 #endif
-//TEMP
- Serial.begin(115200);
 
   encoderHandler.setup();
   inputBus.setup();

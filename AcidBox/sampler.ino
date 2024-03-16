@@ -502,6 +502,9 @@ inline void Sampler::PitchBend(int number) {
 inline void Sampler::ParseCC(uint8_t cc_number , uint8_t cc_value) {
   switch (cc_number) {
     case CC_808_VOLUME:
+
+      printf("808 volume: %d\n", cc_value);
+
       SetVolume( cc_value * MIDI_NORM );
       break;
     case CC_808_NOTE_PAN:

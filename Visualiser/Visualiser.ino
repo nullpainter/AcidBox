@@ -54,7 +54,6 @@ void setup() {
   currentBlending = LINEARBLEND;
   
   display.setFixedFont(ssd1306xled_font6x8);
-  //display.setFixedFont( ssd1306xled_font8x16 );
 }
 
 // Marker bytes
@@ -70,12 +69,9 @@ ISR(SPI_STC_vect) {
   // Read SPI data
   byte data = SPDR;
 
-// Serial.println(data);
-
   // Reset buffer index at the start of a packet. Subsequent packets will override the existing packet.
   if (data == DATA_SEND_START) {
     bufferPos = 0;
-    // Serial.println("PACKET START\n");
     return;
   }
 
@@ -84,7 +80,6 @@ ISR(SPI_STC_vect) {
     // Set flag as soon as the first packet is ready. We don't need to reset this field as subsequent
     // packets override existing values in the buffer. This is just to ensure that at least one complete
     // packet is present in the buffer.
-    // Serial.println("PACKET END\n");
 
     packetReady = true;
   }
@@ -110,13 +105,12 @@ void loop() {
 uint8_t encoderPos;
 
 void animate() {
+
   int brightness = animationRamp.update();
   FastLED.setBrightness(brightness);
 
   FillLEDsFromPaletteColors(encoderPos * 2);
-
   FastLED.show();
- // FastLED.delay(1000 / UPDATES_PER_SECOND);
 }
 
 void processInput() {
@@ -133,9 +127,6 @@ void processInput() {
     // Break if we have read all encoders
     if (buffer[i] == DATA_SEND_END) break;
 
-    Serial.print(buffer[i]);
-    Serial.print(" ");
-
     uint8_t encoderIndex = buffer[i++];
     sprintf(displayBuffer, "Encoder: %d   ", encoderIndex);
     display.printFixed(0, 0, displayBuffer);
@@ -148,8 +139,12 @@ void processInput() {
     uint8_t pressed = buffer[i++];
     uint8_t midiControlNumber = buffer[i++];
 
-    sprintf(displayBuffer, "Position: %d     ", position);
+    sprintf(displayBuffer, "Position: %d   ", position);
     display.printFixed(0, 8, displayBuffer);
+
+    sprintf(displayBuffer, "Pressed: %d   ", pressed);
+    display.printFixed(0, 16, displayBuffer);
+
 
   } while (true);
 }

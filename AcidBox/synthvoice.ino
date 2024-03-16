@@ -175,7 +175,7 @@ inline void SynthVoice::ParseCC(uint8_t cc_number , uint8_t cc_value) {
       break;
     case CC_303_RESO:
 
-    DEBF("Set resonance: %d\n", cc_value);
+   // DEBF("Set resonance: %d\n", cc_value);
 
       _reso = cc_value * MIDI_NORM ;
       _flt_compens = one_div( bilinearLookup(norm1_tbl, _cutoff * 127.0f, cc_value ));

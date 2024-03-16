@@ -8,6 +8,8 @@
 
 void InputBus::setup() {
 
+  //power_timer0_disable();
+
   spiDelay = noDelay(spiDelayMs);
 
   // Configure SS pins
@@ -72,6 +74,8 @@ void InputBus::receiveEncoderValues() {
   */
 }
 
+extern MidiHandler midiHandler; // FIXME pass this in
+
 void InputBus::sendEncoderValues(EncoderState encoderState[]) {
 
   // Send header
@@ -89,6 +93,8 @@ void InputBus::sendEncoderValues(EncoderState encoderState[]) {
     SPI.transfer(encoderState[i].midiControlNumber);
 
     encoderState[i].transmitted = true;
+
+    encoderState[i].button.resetPressedState();
   }
 
   SPI.transfer(DATA_SEND_END);
