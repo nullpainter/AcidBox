@@ -3,14 +3,14 @@
 #include "Controller.h"
 
 // Create and bind the MIDI interface to the default hardware Serial port
-MIDI_CREATE_DEFAULT_INSTANCE();
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 void MidiHandler::setup() {
-  MIDI.begin(MIDI_CHANNEL_OMNI);
+ // MIDI.begin(MIDI_CHANNEL_OMNI);
 }
 
 void MidiHandler::tick() {
-  MIDI.read();
+ /// MIDI.read();
 }
 
 void MidiHandler::sendProgramChange(uint8_t program, uint8_t channel) {
@@ -19,7 +19,7 @@ void MidiHandler::sendProgramChange(uint8_t program, uint8_t channel) {
   printf("Program change: %d %d\n", program, channel);
 #endif
 
-  MIDI.sendProgramChange(program, channel);
+ // MIDI.sendProgramChange(program, channel);
 }
 
 void MidiHandler::sendControlChange(uint8_t number, uint8_t value, uint8_t channel) {
@@ -28,5 +28,5 @@ void MidiHandler::sendControlChange(uint8_t number, uint8_t value, uint8_t chann
   printf("Control change: %d %d\n", number, value, channel);
 #endif
 
-  MIDI.sendControlChange(number, value, channel);
+  //MIDI.sendControlChange(number, value, channel);
 }

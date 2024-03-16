@@ -1,53 +1,70 @@
+#include <RotaryEncoder.h>
 #include "Encoder.h"
 #include "MidiHandler.h"
 
-extern MidiHandler midiHandler;
+#define LATCH_MODE RotaryEncoder::LatchMode::TWO03
 
-// FIXME TEMP - this only supports a single encoder
-static int pos = MIN_MIDI_VAL;
+// FIXME move into class
+RotaryEncoder* encoders[NUM_ENCODERS] = {
+  &RotaryEncoder(4, 2, LATCH_MODE)
+};
 
-// Test encoder
-RotaryEncoder encoder1(4, 2, RotaryEncoder::LatchMode::TWO03);
 
 void EncoderHandler::setup() {
+
+  // TODO consolidate this and the pin values above
   pinMode(2, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
+
+  for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
+    encoderState[i].position = MIN_MIDI_VAL;
+    encoderState[i].pressed = false;
+  }
+
+  encoderState[0].midiControlNumber = CC_ANY_DELAY_FB;
 }
 
-void EncoderHandler::tick() {
+uint8_t EncoderHandler::getValue(RotaryEncoder* encoder) {
 
-  encoder1.tick();
-
-  // FIXME this is a proof of concept. Need to move pos etc. into new class with an
-  // instance per encoder.
-  int newPos = encoder1.getPosition();
+  long newPos = encoder->getPosition();
 
   if (newPos < MIN_MIDI_VAL) {
-    encoder1.setPosition(MIN_MIDI_VAL);
+    encoder->setPosition(MIN_MIDI_VAL);
     newPos = MIN_MIDI_VAL;
   }
 
   if (newPos > MAX_MIDI_VAL) {
-    encoder1.setPosition(MAX_MIDI_VAL);
+    encoder->setPosition(MAX_MIDI_VAL);
     newPos = MAX_MIDI_VAL;
   }
 
-  if (pos != newPos) {
+  return newPos;
+}
 
-    // Global test
-    midiHandler.sendControlChange(CC_ANY_COMPRESSOR, newPos, 1);
-    midiHandler.sendControlChange(CC_ANY_REVERB_TIME, newPos, 1);
-    midiHandler.sendControlChange(CC_ANY_REVERB_LVL, newPos, 1);
-    midiHandler.sendControlChange(CC_ANY_DELAY_FB, newPos, 1);
-    midiHandler.sendControlChange(CC_ANY_DELAY_TIME, newPos, 1);
-    midiHandler.sendControlChange(CC_ANY_DELAY_LVL, newPos, 1);
+static uint8_t j;
 
+void EncoderHandler::tick(MidiHandler *midiHandler) {
 
-    // Synth test
-    midiHandler.sendControlChange(CC_303_RESO, newPos, SYNTH1_MIDI_CHAN);
-    midiHandler.sendControlChange(CC_303_RESO, newPos, SYNTH2_MIDI_CHAN);
-    midiHandler.sendControlChange(CC_808_DISTORTION, newPos, DRUM_MIDI_CHAN);
+  for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
+    RotaryEncoder* encoder = encoders[i];
+    EncoderState* state = &encoderState[i];
 
-    pos = newPos;
+    encoder->tick();
+
+    // Get clamped encoder value
+    uint8_t newPos = getValue(encoder);
+
+    // If the encoder has changed value, send a MIDI control change for the encoder
+    if (state->position != newPos) {
+
+      state->position = newPos;
+      state->transmitted = false;
+
+//Serial.println("DONKEYS");
+      midiHandler->sendControlChange(93, (j++ % 127), 1);
+
+      // Send MIDI message to AcidBox
+    //  midiHandler->sendControlChange(state->midiControlNumber, i++, 1);
+    }
   }
 }
