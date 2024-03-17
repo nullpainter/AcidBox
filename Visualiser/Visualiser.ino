@@ -24,6 +24,7 @@ uint8_t buffer[BUFFER_SIZE];
 #define ON_RAMP_SPEED 1000
 
 DisplaySSD1306_128x32_I2C display(-1);
+NanoCanvas<128, 32, 1> canvas;
 
 void prepareSpiSlave() {
   /*
@@ -43,6 +44,8 @@ void setup() {
 
   Serial.begin(115200);
 
+  canvas.setFreeFont(free_slkscr10x14 /*ssd1306xled_font6x8*/);
+
   prepareSpiSlave();
 
   display.begin();
@@ -59,7 +62,6 @@ void setup() {
   //  display.setFixedFont(ssd1306xled_font6x8/*ssd1306xled_font6x8*/);
 
   // Pretty good - possibly a bit too small?
-  display.setFreeFont(free_slkscr10x14 /*ssd1306xled_font6x8*/);
   // display.setFreeFont(free_slkscr11x15/*ssd1306xled_font6x8*/);
 
   // too big/ugly
@@ -104,11 +106,11 @@ noDelay animationDelay = noDelay(1000 / UPDATES_PER_SECOND);
 
 
 void loop() {
-/*
+
   if (animationDelay.update()) {
     animate();
   }
-*/
+
   processInput();
 }
 
@@ -123,7 +125,6 @@ void animate() {
   FastLED.show();
 }
 
-NanoCanvas<128, 10, 1> canvas;
 
 void processInput() {
 
@@ -141,39 +142,31 @@ void processInput() {
 
     uint8_t encoderIndex = buffer[i++];
     uint8_t position = buffer[i++];
-
-Serial.print(encoderIndex);
-Serial.print(" ");
-Serial.println(position);
-
     // TEMP
     encoderPos = position;
 
     uint8_t pressed = buffer[i++];
     uint8_t midiControlNumber = buffer[i++];
 
-    //    sprintf(displayBuffer, "Position: %d   ", position);
-    //display.printFixed(0, 20, displayBuffer);
-
-    // sprintf(displayBuffer, "Pressed: %d   ", pressed);
-    // display.printFixed(0, 25, displayBuffer);
-
     switch (midiControlNumber) {
       case CC_ANY_DELAY_FB:
-        sprintf(displayBuffer, "DELAY FEEDBCK");
+        sprintf(displayBuffer, "DELAY FEEDBK");
+        break;
+      case CC_ANY_DELAY_TIME:
+        sprintf(displayBuffer, "DELAY TIME");
         break;
       case CC_808_VOLUME:
-        sprintf(displayBuffer, "808 VOLUME                     ");
+        sprintf(displayBuffer, "808 VOLUME");
+        break;
+      default:
+        sprintf(displayBuffer, "MYSTERY");
         break;
     }
 
-    display.printFixed(0, 0, displayBuffer, STYLE_NORMAL);
-
-
     canvas.clear();
-    canvas.setColor(0xFF);
-    canvas.fillRect(0, 0, position, 5);
-    display.drawCanvas(0, 20, canvas);
+    canvas.printFixed(0, 0, displayBuffer, STYLE_NORMAL);
+    canvas.fillRect(0, 20, position, 25);
+    display.drawCanvas(0, 0, canvas);
 
 
 

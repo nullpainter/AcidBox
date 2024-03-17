@@ -5,7 +5,7 @@
 #include "Controller.h"
 #include "MidiHandler.h"
 
-#define NUM_ENCODERS 2
+#define NUM_ENCODERS 3
 
 struct EncoderState {
   uint8_t position;
@@ -15,7 +15,7 @@ struct EncoderState {
   Button2 button;
 
   bool transmitted;
-  };
+};
 
 class EncoderHandler {
 public:
@@ -27,7 +27,8 @@ private:
   uint8_t getValue(RotaryEncoder& encoder);
   static void handleButtonPress(Button2& button);
   RotaryEncoder encoders[NUM_ENCODERS] = {
-    RotaryEncoder(4, 2),  
-    RotaryEncoder(3, 6) 
+    RotaryEncoder(4, 2),
+    RotaryEncoder(3, 6),
+    RotaryEncoder(18, 19)
   };
 };
