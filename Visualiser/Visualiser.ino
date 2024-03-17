@@ -3,9 +3,12 @@
 #include <Ramp.h>
 #include <LibPrintf.h>
 #include <lcdgfx.h>
+#include <lcdgfx_gui.h>
 #include <NoDelay.h>
 
+#include "libraries/midi_config.h"
 #include "Animation.h"
+#include "Silkscreen.h"
 
 static ramp animationRamp;
 
@@ -44,7 +47,7 @@ void setup() {
 
   display.begin();
   display.clear();
-  
+
   animationRamp.go(BRIGHTNESS, ON_RAMP_SPEED, CUBIC_IN, ONCEFORWARD);
 
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -52,8 +55,15 @@ void setup() {
 
   currentPalette = RainbowColors_p;
   currentBlending = LINEARBLEND;
-  
-  display.setFixedFont(ssd1306xled_font6x8);
+
+  //  display.setFixedFont(ssd1306xled_font6x8/*ssd1306xled_font6x8*/);
+
+  // Pretty good - possibly a bit too small?
+  display.setFreeFont(free_slkscr10x14 /*ssd1306xled_font6x8*/);
+  // display.setFreeFont(free_slkscr11x15/*ssd1306xled_font6x8*/);
+
+  // too big/ugly
+  // display.setFreeFont(free_slkscr13x19/*ssd1306xled_font6x8*/);
 }
 
 // Marker bytes
@@ -94,11 +104,11 @@ noDelay animationDelay = noDelay(1000 / UPDATES_PER_SECOND);
 
 
 void loop() {
- 
+/*
   if (animationDelay.update()) {
     animate();
   }
-
+*/
   processInput();
 }
 
@@ -112,6 +122,8 @@ void animate() {
   FillLEDsFromPaletteColors(encoderPos * 2);
   FastLED.show();
 }
+
+NanoCanvas<128, 10, 1> canvas;
 
 void processInput() {
 
@@ -128,10 +140,11 @@ void processInput() {
     if (buffer[i] == DATA_SEND_END) break;
 
     uint8_t encoderIndex = buffer[i++];
-    sprintf(displayBuffer, "Encoder: %d   ", encoderIndex);
-    display.printFixed(0, 0, displayBuffer);
-
     uint8_t position = buffer[i++];
+
+Serial.print(encoderIndex);
+Serial.print(" ");
+Serial.println(position);
 
     // TEMP
     encoderPos = position;
@@ -139,11 +152,29 @@ void processInput() {
     uint8_t pressed = buffer[i++];
     uint8_t midiControlNumber = buffer[i++];
 
-    sprintf(displayBuffer, "Position: %d   ", position);
-    display.printFixed(0, 8, displayBuffer);
+    //    sprintf(displayBuffer, "Position: %d   ", position);
+    //display.printFixed(0, 20, displayBuffer);
 
-    sprintf(displayBuffer, "Pressed: %d   ", pressed);
-    display.printFixed(0, 16, displayBuffer);
+    // sprintf(displayBuffer, "Pressed: %d   ", pressed);
+    // display.printFixed(0, 25, displayBuffer);
+
+    switch (midiControlNumber) {
+      case CC_ANY_DELAY_FB:
+        sprintf(displayBuffer, "DELAY FEEDBCK");
+        break;
+      case CC_808_VOLUME:
+        sprintf(displayBuffer, "808 VOLUME                     ");
+        break;
+    }
+
+    display.printFixed(0, 0, displayBuffer, STYLE_NORMAL);
+
+
+    canvas.clear();
+    canvas.setColor(0xFF);
+    canvas.fillRect(0, 0, position, 5);
+    display.drawCanvas(0, 20, canvas);
+
 
 
   } while (true);
