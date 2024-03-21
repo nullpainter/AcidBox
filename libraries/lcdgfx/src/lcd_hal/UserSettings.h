@@ -48,22 +48,22 @@
  * and want to reduce memory consumption.                               */
 
 /** Define this macro if you need to enable software I2C module for compilation */
-#define CONFIG_SOFTWARE_I2C_ENABLE
+//#define CONFIG_SOFTWARE_I2C_ENABLE
 
 /** Define this macro if you need to enable TWI I2C module for compilation */
-#define CONFIG_TWI_I2C_ENABLE
+//#define CONFIG_TWI_I2C_ENABLE
 
 /** Define this macro if you need to enable AVR SPI module for compilation */
-#define CONFIG_AVR_SPI_ENABLE
+//#define CONFIG_AVR_SPI_ENABLE
 
 /** Define this macro if you need to enable USI SPI module for compilation */
-#define CONFIG_USI_SPI_ENABLE
+//#define CONFIG_USI_SPI_ENABLE
 
 /** Define this macro if you need to enable AVR UART module for compilation */
-#define CONFIG_AVR_UART_ENABLE
+//#define CONFIG_AVR_UART_ENABLE
 
 /** Define this macro if you need to enable VGA module for compilation */
-#define CONFIG_VGA_ENABLE
+//#define CONFIG_VGA_ENABLE
 
 /** Define this macro if you need to enable Adafruit GFX canvas support for compilation */
 #ifndef CONFIG_ADAFRUIT_GFX_ENABLE
@@ -80,37 +80,37 @@
  * Define this macro if platform specific spi interface is implemented in SSD1306 HAL
  * If you use Arduino platform, this macro enables Arduino SPI library module for compilation.
  */
-#define CONFIG_PLATFORM_SPI_ENABLE
+// #define CONFIG_PLATFORM_SPI_ENABLE
 
-/** Define this macro if you need to enable Linux I2C module for compilation */
-#define CONFIG_LINUX_I2C_ENABLE
+// /** Define this macro if you need to enable Linux I2C module for compilation */
+// #define CONFIG_LINUX_I2C_ENABLE
 
-/** Define this macro if you need to enable Linux SPI module for compilation */
-#define CONFIG_LINUX_SPI_ENABLE
+// /** Define this macro if you need to enable Linux SPI module for compilation */
+// #define CONFIG_LINUX_SPI_ENABLE
 
-/** Define this macro if you need to enable Arduino Wire module for compilation */
-#define CONFIG_ARDUINO_I2C_ENABLE
+// /** Define this macro if you need to enable Arduino Wire module for compilation */
+// #define CONFIG_ARDUINO_I2C_ENABLE
 
-/** Define this macro if you need to enable Arduino SPI module for compilation */
-#define CONFIG_ARDUINO_SPI_ENABLE
+// /** Define this macro if you need to enable Arduino SPI module for compilation */
+// #define CONFIG_ARDUINO_SPI_ENABLE
 
-/** Define this macro if you need to enable ESP32 I2C module for compilation */
-#define CONFIG_ESP32_I2C_ENABLE
+// /** Define this macro if you need to enable ESP32 I2C module for compilation */
+// #define CONFIG_ESP32_I2C_ENABLE
 
-/** Define this macro if you need to enable ESP32 SPI module for compilation */
-#define CONFIG_ESP32_SPI_ENABLE
+// /** Define this macro if you need to enable ESP32 SPI module for compilation */
+// #define CONFIG_ESP32_SPI_ENABLE
 
-/** Define this macro if you need to enable ESP8266 I2C module for compilation */
-#define CONFIG_ESP8266_I2C_ENABLE
+// /** Define this macro if you need to enable ESP8266 I2C module for compilation */
+// #define CONFIG_ESP8266_I2C_ENABLE
 
-/** Define this macro if you need to enable ESP8266 SPI module for compilation */
-#define CONFIG_ESP8266_SPI_ENABLE
+// /** Define this macro if you need to enable ESP8266 SPI module for compilation */
+// #define CONFIG_ESP8266_SPI_ENABLE
 
 /**
  * Defines, whenever ssd1306 library supports unicode.
  * Support of unicode increases RAM and Flasg memory consumption
  */
-#define CONFIG_SSD1306_UNICODE_ENABLE
+// #define CONFIG_SSD1306_UNICODE_ENABLE
 
 /**
  * @}
