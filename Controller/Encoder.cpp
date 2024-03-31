@@ -14,6 +14,8 @@ void EncoderHandler::setup() {
   pinMode(6, INPUT_PULLUP);
   pinMode(20, INPUT_PULLUP);
   pinMode(21, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP);
 
   encoderState[0].button.begin(8, INPUT_PULLUP);
   encoderState[0].midiChannel = DRUM_MIDI_CHAN;
@@ -27,6 +29,10 @@ void EncoderHandler::setup() {
   encoderState[2].midiChannel = 1;  // Global
   encoderState[2].midiControlNumber = CC_ANY_DELAY_TIME;
 
+  encoderState[3].button.begin(16, INPUT_PULLUP);
+  encoderState[3].midiChannel = 1;  // Global
+  encoderState[3].midiControlNumber = CC_ANY_REVERB_TIME;
+
   for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
     encoderState[i].position = MIN_MIDI_VAL;
     encoderState[i].pressed = false;
@@ -37,21 +43,21 @@ void EncoderHandler::setup() {
 // This way the menu updates
 uint8_t EncoderHandler::getValue(RotaryEncoder& encoder) {
 
-  long newPos = encoder.getPosition();
+  long newPos = encoder.getPosition() * ROTARYSTEPS;
 
-  if (newPos < MIN_MIDI_VAL) {
-    encoder.setPosition(MIN_MIDI_VAL);
-    newPos = MIN_MIDI_VAL;
+  if (newPos < ROTARYMIN) {
+    encoder.setPosition(ROTARYMIN / ROTARYSTEPS);
+    return ROTARYMIN;
   }
 
-  if (newPos > MAX_MIDI_VAL) {
-    encoder.setPosition(MAX_MIDI_VAL);
-    newPos = MAX_MIDI_VAL;
+  if (newPos > ROTARYMAX) {
+    encoder.setPosition(ROTARYMAX / ROTARYSTEPS);
+    return ROTARYMAX;
   }
 
-  newPos = constrain(newPos * 4, MIN_MIDI_VAL, MAX_MIDI_VAL);
-
-  return newPos;
+  // Encoder values are from 0-128 instead of 0-127 in order to result in an even multiple of 
+  // ENCODERSTEPS, however MIDI values are from 0-127, so we need to clamp.
+  return constrain(newPos, MIN_MIDI_VAL, MAX_MIDI_VAL);
 }
 
 static uint8_t j;
@@ -66,6 +72,11 @@ void EncoderHandler::tick(MidiHandler* midiHandler) {  // TODO pass this by refe
     encoders[i].tick();
     uint8_t newPos = getValue(encoders[i]);
 
+#ifdef DEBUG
+    Serial.print(newPos);
+    Serial.print(" \t");
+#endif
+
     // If the encoder has changed value, send a MIDI control change for the encoder
     if (state->position != newPos) {
 
@@ -78,10 +89,13 @@ void EncoderHandler::tick(MidiHandler* midiHandler) {  // TODO pass this by refe
 
     // Transmit encoder data if the button was pressed
     bool buttonPressed = state->button.wasPressed();
-    if (state->pressed != buttonPressed) 
-    {
+    if (state->pressed != buttonPressed) {
       state->pressed = buttonPressed;
       state->transmitted = false;
     }
   }
+
+#ifdef DEBUG
+  Serial.println();
+#endif
 }

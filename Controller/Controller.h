@@ -3,7 +3,7 @@
 // Copied from AcidBox
 #include "libraries/midi_config.h"
 
-#define DEBUG
+//#define DEBUG
 
 // MIDI channels for keyup and keydown events
 #define KEY_DOWN_CHANNEL 1

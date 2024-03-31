@@ -34,7 +34,19 @@ void InputBus::tick(EncoderState encoderState[]) {
 
 void InputBus::transmit(EncoderState encoderState[]) {
 
-  SPI.beginTransaction(SPISettings(1000, MSBFIRST, SPI_MODE0)); 
+  bool transmitRequired = false;
+
+// TODO this will stop receiving, I think
+  for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
+    if (!encoderState[i].transmitted) {
+      transmitRequired = true;
+      break;
+    }
+  }
+
+  if (!transmitRequired) return;
+
+  SPI.beginTransaction(SPISettings(1000, MSBFIRST, SPI_MODE0));
 
   // Enable communication with the input bus
   digitalWrite(INPUT_BUS_SS, LOW);
@@ -74,7 +86,7 @@ void InputBus::receiveEncoderValues() {
   */
 }
 
-extern MidiHandler midiHandler; // FIXME pass this in
+extern MidiHandler midiHandler;  // FIXME pass this in
 
 void InputBus::sendEncoderValues(EncoderState encoderState[]) {
 
