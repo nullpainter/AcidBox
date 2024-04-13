@@ -9,7 +9,7 @@
 
 class InputBus {
   public:
-    void tick(EncoderState encoderState[]); 
+    void update(EncoderState encoderState[]); 
     void setup();
   private:
     void transmit(EncoderState encoderState[]);

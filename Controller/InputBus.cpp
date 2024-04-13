@@ -36,7 +36,8 @@ void InputBus::transmit(EncoderState encoderState[]) {
 
   bool transmitRequired = false;
 
-// TODO this will stop receiving, I think
+  // TODO we need to fix / be aware of this when reading from the slave, as we always
+  // want to do that. 
   for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
     if (!encoderState[i].transmitted) {
       transmitRequired = true;
@@ -61,29 +62,6 @@ void InputBus::transmit(EncoderState encoderState[]) {
   digitalWrite(USB_HOST_SHIELD_SS, LOW);
 
   SPI.endTransaction();
-}
-
-void InputBus::receiveEncoderValues() {
-  /*
-  uint8_t remoteKnobCount = SPI.transfer(DATA_READ_START);
-
-  printf("Read %d remote knobs\n", remoteKnobCount);
-
-  if (remoteKnobCount >= NUM_REMOTE_KNOBS) {
-    printf("Unexpected remote knob count: %d\n");
-    return;
-  }*/
-
-  // FIXME reinstate w/struct. Also use in Encoder class
-
-  /*
-  for (uint8_t i = 0; i < remoteKnobCount; i++) {
-    remoteKnobValues[i] = SPI.transfer(0);
-    remoteButtonValues[i] = SPI.transfer(0);
-
-    printf("Remote knob %d value: %d, state: %d", i, remoteKnobValues[i], remoteButtonValues[i]);
-  }
-  */
 }
 
 extern MidiHandler midiHandler;  // FIXME pass this in
