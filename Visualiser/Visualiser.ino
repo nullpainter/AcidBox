@@ -5,14 +5,18 @@
 #include <lcdgfx_gui.h>
 #include <NoDelay.h>
 
-#include "Silkscreen.h"
 #include "libraries/midi_config.h"
 #include "Animation.h"
-#include "BeatDetector.h"
+#include "Display.h"
+#include "Encoder.h"
+
+//#include "BeatDetector.h"
 
 Display display;
-ImputBus inputBus;
-BeatDetector beatDefector;
+InputBus inputBus;
+EncoderHandler encoderHandler;
+
+//BeatDetector beatDefector;
 ramp animationRamp;
 
 extern CRGBPalette16 currentPalette;
@@ -26,14 +30,6 @@ uint8_t buffer[BUFFER_SIZE];
 // Speed that the LEDs animate their brightness when first power on
 #define ON_RAMP_SPEED 1000
 
-DisplaySSD1306_128x32_I2C display(-1);
-
-const uint8_t canvasWidth = 128;
-const uint8_t canvasHeight = 32;
-
-uint8_t canvasData[canvasWidth * (canvasHeight / 8)];
-NanoCanvas1 canvas(canvasWidth, canvasHeight, canvasData);
-
 void prepareSpiSlave() {
 
   // Turn on SPI in slave mode
@@ -44,20 +40,16 @@ void prepareSpiSlave() {
 }
 
 void setup() {
-
+/*
   beatDetector.setup();
   beatDetector.setupADC();
   
   // TODO - this should blink, right?
   pinMode(LED_BUILTIN, OUTPUT);
+*/
 
   prepareSpiSlave();
-
-  display.begin();
-  display.clear();
-
-  canvas.setFreeFont(free_slkscr10x14);
-  canvas.setMode(CANVAS_MODE_TRANSPARENT);  // TODO necessary?
+  display.setup();
 
   animationRamp.go(BRIGHTNESS, ON_RAMP_SPEED, CUBIC_IN, ONCEFORWARD);
 
@@ -76,14 +68,16 @@ void setup() {
 noDelay animationDelay = noDelay(1000 / UPDATES_PER_SECOND);
 
 void loop() {
-   loopBeatDetector();
-   display.update(&inputBus);
+  encoderHandler.tick();
+
+   //loopBeatDetector();
+   display.update(inputBus);
 
   if (animationDelay.update()) {
     animate();
   }
 
-  processInput();
+  inputBus.update();//encoderHandler.encoderState);
 }
 
 uint8_t encoderPos;

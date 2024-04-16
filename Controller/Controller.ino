@@ -38,5 +38,5 @@ void loop() {
   encoderHandler.tick(&midiHandler);
   midiHandler.tick();
   usb.Task(); 
-  inputBus.tick(encoderHandler.encoderState);
+  inputBus.update(encoderHandler.encoderState);
 }

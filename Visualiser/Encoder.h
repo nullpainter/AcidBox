@@ -2,7 +2,9 @@
 
 #include <RotaryEncoder.h>
 #include "Button2.h"
-#include "Controller.h"
+
+#define MIN_MIDI_VAL 0
+#define MAX_MIDI_VAL 127
 
 #define NUM_ENCODERS 4
 
@@ -25,7 +27,7 @@ struct EncoderState {
 class EncoderHandler {
 public:
   void setup();
-  void tick(MidiHandler* midiHandler);
+  void tick();
   EncoderState encoderState[NUM_ENCODERS];
 
 private:

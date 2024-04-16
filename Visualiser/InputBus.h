@@ -7,13 +7,14 @@
 #define DATA_SEND_START 0xF1
 #define DATA_SEND_END   0xE1
 
+#define BUFFER_SIZE 128
+
 class InputBus {
   public:
-    void update(EncoderState encoderState[]); 
+    void update(); 
     void setup();
-    volatile bool packetReady = false;
+    static volatile bool packetReady;
   private:
     const uint8_t spiDelayMs = 50;
     noDelay spiDelay;
-    uint8_t bufferPos;
 };

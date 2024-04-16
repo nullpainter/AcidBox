@@ -1,6 +1,13 @@
 #include <RotaryEncoder.h>
 #include "Button2.h"
 #include "Encoder.h"
+#include "libraries/midi_config.h"
+
+#define SYNTH1_MIDI_CHAN 1
+#define SYNTH2_MIDI_CHAN 2
+
+#define DRUM_MIDI_CHAN 10
+
 
 void EncoderHandler::setup() {
 
@@ -60,7 +67,7 @@ uint8_t EncoderHandler::getValue(RotaryEncoder& encoder) {
 
 static uint8_t j;
 
-void EncoderHandler::tick(MidiHandler* midiHandler) {  // TODO pass this by reference
+void EncoderHandler::tick() {
 
   for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
     EncoderState* state = &encoderState[i];

@@ -2,12 +2,16 @@
 #include "InputBus.h"
 
 
+uint8_t bufferPos;
+uint8_t buffer[BUFFER_SIZE];
+
+
 void InputBus::setup() {
   spiDelay = noDelay(spiDelayMs);
+  InputBus::packetReady = false;
 }
 
 void InputBus::update() {
-    
 }
 
 // SPI interrupt routine
@@ -28,7 +32,7 @@ ISR(SPI_STC_vect) {
     // packets override existing values in the buffer. This is just to ensure that at least one complete
     // packet is present in the buffer.
 
-    packetReady = true;
+    InputBus::packetReady = true;
   }
 
   // add payload to buffer if room
@@ -36,5 +40,3 @@ ISR(SPI_STC_vect) {
     buffer[bufferPos++] = data;
   }
 }
-
-

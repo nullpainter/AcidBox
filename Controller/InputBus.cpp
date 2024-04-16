@@ -23,8 +23,7 @@ void InputBus::setup() {
   SPI.begin();
 }
 
-// TODO rename this to update - tick is dumb
-void InputBus::tick(EncoderState encoderState[]) {
+void InputBus::update(EncoderState encoderState[]) {
 
   // Delay after each packet to give the slave time to to process
   if (spiDelay.update()) {
