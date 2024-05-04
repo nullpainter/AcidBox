@@ -1,4 +1,5 @@
 #include <RotaryEncoder.h>
+#include "Visualiser.h"
 #include "Button2.h"
 #include "Encoder.h"
 #include "libraries/midi_config.h"
@@ -8,35 +9,16 @@
 
 #define DRUM_MIDI_CHAN 10
 
-
 void EncoderHandler::setup() {
 
   // Enocder pins
-  // TODO confirm if necessary
-  pinMode(2, INPUT_PULLUP);
-  pinMode(4, INPUT_PULLUP);
-  pinMode(3, INPUT_PULLUP);
-  pinMode(6, INPUT_PULLUP);
-  pinMode(20, INPUT_PULLUP);
-  pinMode(21, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
-  pinMode(15, INPUT_PULLUP);
+  // TODO confirm if necessary 
+  pinMode(8, INPUT_PULLUP);
+  pinMode(9, INPUT_PULLUP);
 
-  encoderState[0].button.begin(8, INPUT_PULLUP);
+  //encoderState[0].button.begin(9, INPUT_PULLUP);  // TODO - need to wire up button
   encoderState[0].midiChannel = DRUM_MIDI_CHAN;
   encoderState[0].midiControlNumber = CC_808_VOLUME;
-
-  encoderState[1].button.begin(7, INPUT_PULLUP);
-  encoderState[1].midiChannel = 1;  // Global
-  encoderState[1].midiControlNumber = CC_ANY_DELAY_FB;
-
-  encoderState[2].button.begin(9, INPUT_PULLUP);
-  encoderState[2].midiChannel = 1;  // Global
-  encoderState[2].midiControlNumber = CC_ANY_DELAY_TIME;
-
-  encoderState[3].button.begin(16, INPUT_PULLUP);
-  encoderState[3].midiChannel = 1;  // Global
-  encoderState[3].midiControlNumber = CC_ANY_REVERB_TIME;
 
   for (uint8_t i = 0; i < NUM_ENCODERS; i++) {
     encoderState[i].position = MIN_MIDI_VAL;
@@ -77,19 +59,10 @@ void EncoderHandler::tick() {
     encoders[i].tick();
     uint8_t newPos = getValue(encoders[i]);
 
-#ifdef DEBUG
-    Serial.print(newPos);
-    Serial.print(" \t");
-#endif
-
-    // If the encoder has changed value, send a MIDI control change for the encoder
     if (state->position != newPos) {
 
       state->position = newPos;
       state->transmitted = false;
-
-      // Send MIDI message to AcidBox
-      // midiHandler->sendControlChange(state->midiControlNumber, state->position, state->midiChannel);
     }
 
     // Transmit encoder data if the button was pressed

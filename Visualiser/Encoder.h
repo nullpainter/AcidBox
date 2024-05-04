@@ -6,7 +6,7 @@
 #define MIN_MIDI_VAL 0
 #define MAX_MIDI_VAL 127
 
-#define NUM_ENCODERS 4
+#define NUM_ENCODERS 1
 
 #define ROTARYSTEPS 4
 #define ROTARYMIN 0
@@ -28,15 +28,12 @@ class EncoderHandler {
 public:
   void setup();
   void tick();
-  EncoderState encoderState[NUM_ENCODERS];
+  inline static EncoderState encoderState[NUM_ENCODERS];
 
 private:
   uint8_t getValue(RotaryEncoder& encoder);
   static void handleButtonPress(Button2& button);
   RotaryEncoder encoders[NUM_ENCODERS] = {
-    RotaryEncoder(4, 2),
-    RotaryEncoder(3, 6),
-    RotaryEncoder(18, 19),
-    RotaryEncoder(15, 14)
+    RotaryEncoder(8, 9)
   };
 };

@@ -12,7 +12,7 @@ static const uint8_t canvasHeight = 32;
 class Display {
 public:
   void setup();
-  void update(InputBus& inputBus);
+  void update();
 private:
   uint8_t canvasData[canvasWidth * (canvasHeight / 8)];
 

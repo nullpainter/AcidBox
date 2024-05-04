@@ -88,3 +88,7 @@ void InputBus::sendEncoderValues(EncoderState encoderState[]) {
 
   SPI.transfer(DATA_SEND_END);
 }
+
+void INputBus::receiveEncoderValues() {
+  // TODO
+}

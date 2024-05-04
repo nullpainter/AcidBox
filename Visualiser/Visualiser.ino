@@ -71,13 +71,13 @@ void loop() {
   encoderHandler.tick();
 
    //loopBeatDetector();
-   display.update(inputBus);
+   display.update();
 
   if (animationDelay.update()) {
     animate();
   }
 
-  inputBus.update();//encoderHandler.encoderState);
+  inputBus.update();
 }
 
 uint8_t encoderPos;
