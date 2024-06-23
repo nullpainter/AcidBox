@@ -4,19 +4,19 @@
 #include <lcdgfx.h>
 #include <lcdgfx_gui.h>
 #include <NoDelay.h>
+#include <midi_config.h>
 
-#include "libraries/midi_config.h"
 #include "Animation.h"
 #include "Display.h"
 #include "Encoder.h"
 
-//#include "BeatDetector.h"
+// #include "BeatDetector.h"
 
 Display display;
 InputBus inputBus;
 EncoderHandler encoderHandler;
 
-//BeatDetector beatDefector;
+// BeatDetector beatDefector;
 ramp animationRamp;
 
 extern CRGBPalette16 currentPalette;
@@ -26,29 +26,35 @@ extern CRGB leds[];
 #define BUFFER_SIZE 64
 uint8_t buffer[BUFFER_SIZE];
 
-
 // Speed that the LEDs animate their brightness when first power on
 #define ON_RAMP_SPEED 1000
 
-void prepareSpiSlave() {
+void prepareSpiSlave()
+{
+
+  pinMode(MISO, OUTPUT);
 
   // Turn on SPI in slave mode
   SPCR |= _BV(SPE);
-  pinMode(MISO, OUTPUT);
 
-  SPI.attachInterrupt();
+  // turn on interrupts
+  SPCR |= _BV(SPIE);
 }
 
-void setup() {
-/*
-  beatDetector.setup();
-  beatDetector.setupADC();
-  
-  // TODO - this should blink, right?
-  pinMode(LED_BUILTIN, OUTPUT);
-*/
+void setup()
+{
+  /*
+    beatDetector.setup();
+    beatDetector.setupADC();
+
+    // TODO - this should blink, right?
+    pinMode(LED_BUILTIN, OUTPUT);
+  */
 
   prepareSpiSlave();
+
+  encoderHandler.setup();
+  inputBus.setup();
   display.setup();
 
   animationRamp.go(BRIGHTNESS, ON_RAMP_SPEED, CUBIC_IN, ONCEFORWARD);
@@ -59,36 +65,41 @@ void setup() {
   currentPalette = RainbowColors_p;
   currentBlending = LINEARBLEND;
 
-
   Serial.begin(115200);
-  while (!Serial) {}
+  while (!Serial)
+  {
+  }
 
   Serial.println("Starting visualiser");
 }
 noDelay animationDelay = noDelay(1000 / UPDATES_PER_SECOND);
 
-void loop() {
-  encoderHandler.tick();
-
-   //loopBeatDetector();
-   display.update();
-
-  if (animationDelay.update()) {
-    animate();
-  }
-
-  inputBus.update();
-}
-
 uint8_t encoderPos;
 
-void animate() {
+void animate()
+{
 
-  if (!animationRamp.isFinished()) {
+  if (!animationRamp.isFinished())
+  {
     int brightness = animationRamp.update();
     FastLED.setBrightness(brightness);
   }
 
   FillLEDsFromPaletteColors(encoderPos * 2);
   FastLED.show();
+}
+
+void loop()
+{
+  encoderHandler.tick();
+
+  // // loopBeatDetector();
+  // display.update(); // TODO need to fix so it only updates if the state has actually changed
+
+  // if (animationDelay.update())
+  // {
+  //   animate();
+  // }
+
+  inputBus.update();
 }

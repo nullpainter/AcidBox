@@ -1,9 +1,10 @@
 #pragma once
 
-// Copied from AcidBox
-#include "libraries/midi_config.h"
+// Copied from AcidBox - TODO move to lib
+#include <midi_config.h>
 
-//#define DEBUG
+#define DEBUG
+//#define ENABLE_MIDI
 
 // MIDI channels for keyup and keydown events
 #define KEY_DOWN_CHANNEL 1

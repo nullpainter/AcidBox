@@ -15,7 +15,8 @@ InputBus inputBus;
 
 HIDBoot<USB_HID_PROTOCOL_KEYBOARD> hidKeyboard(&usb);
 
-void setup() {
+void setup()
+{
 #ifdef DEBUG
   Serial.begin(115200);
 #endif
@@ -23,20 +24,21 @@ void setup() {
   encoderHandler.setup();
   inputBus.setup();
   midiHandler.setup();
-
-  if (usb.Init() == -1) {
-    Serial.begin(115200);
-    Serial.println("OSC did not start.");
-  }
-
-  delay(200);
-  hidKeyboard.SetReportParser(0, &buttonParser);
+  /*
+    if (usb.Init() == -1) {
+      Serial.begin(115200);
+      Serial.println("OSC did not start.");
+    }
+  */
+  // delay(200);
+  // TEMP hidKeyboard.SetReportParser(0, &buttonParser);
 }
 
-void loop() {
+void loop()
+{
 
   encoderHandler.tick(&midiHandler);
   midiHandler.tick();
-  usb.Task(); 
+  // usb.Task(); TEMP
   inputBus.update(encoderHandler.encoderState);
 }

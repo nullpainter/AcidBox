@@ -6,11 +6,15 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 void MidiHandler::setup() {
+#ifdef ENABLE_MIDI
   MIDI.begin(MIDI_CHANNEL_OMNI);
+#endif
 }
 
 void MidiHandler::tick() {
+#ifdef ENABLE_MIDI
   MIDI.read();
+#endif
 }
 
 void MidiHandler::sendProgramChange(uint8_t program, uint8_t channel) {
@@ -19,14 +23,19 @@ void MidiHandler::sendProgramChange(uint8_t program, uint8_t channel) {
   printf("Program change: %d %d\n", program, channel);
 #endif
 
+
+#ifdef ENABLE_MIDI
   MIDI.sendProgramChange(program, channel);
+#endif
 }
 
 void MidiHandler::sendControlChange(uint8_t number, uint8_t value, uint8_t channel) {
 
 #ifdef DEBUG
-  printf("Control change: %d %d\n", number, value, channel);
+  printf("Control change: %d %d %d\n", number, value, channel);
 #endif
 
+#ifdef ENABLE_MIDI
   MIDI.sendControlChange(number, value, channel);
+#endif
 }
