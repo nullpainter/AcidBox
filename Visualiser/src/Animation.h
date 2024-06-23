@@ -4,11 +4,11 @@
 
 #define LED_PIN     17
 #define NUM_LEDS    64
-#define BRIGHTNESS  32
+#define BRIGHTNESS  128 
 #define LED_TYPE    WS2812
 #define COLOR_ORDER GRB
 
-#define UPDATES_PER_SECOND 25
+#define UPDATES_PER_SECOND 15
 
 void ChangePalettePeriodically();
 void FillLEDsFromPaletteColors( uint8_t colorIndex);

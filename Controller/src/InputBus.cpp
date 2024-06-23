@@ -90,9 +90,19 @@ void InputBus::receiveEncoderValues()
   // Response is on next transfer
   transferAndWait(DATA_READ);
 
+  // TEMP
+  uint8_t numBytes = 0;
+
   do
   {
     uint8_t response = transferAndWait(DATA_READ);
+    if (numBytes >= INPUT_BUFFER_SIZE)
+    {
+      Serial.println("Buffer overrun");
+      break;
+    }
+
+    inputBuffer[numBytes++] = response;
 
     // Ignore echoed values and end values
     if (response == DATA_READ || response == DATA_READ_END)
@@ -100,10 +110,19 @@ void InputBus::receiveEncoderValues()
       break;
     }
 
-    Serial.print(response, HEX);
-    Serial.print(" ");
-
   } while (true);
+
+  // FIXME TEMP - tidy plz
+  uint8_t responseSize = 17;
+  if (numBytes < responseSize)  // Partial packet due to FastLED
+    return;
+
+  for (uint8_t i = 0; i < numBytes; i++)
+  {
+
+    Serial.print(inputBuffer[i], HEX);
+    Serial.print(" ");
+  }
 
   Serial.println();
 }

@@ -1,4 +1,3 @@
-#include <FastLED.h>
 #include <SPI.h>
 #include <Ramp.h>
 #include <lcdgfx.h>
@@ -10,21 +9,15 @@
 #include "Display.h"
 #include "Encoder.h"
 
-// #include "BeatDetector.h"
-
 Display display;
 InputBus inputBus;
 EncoderHandler encoderHandler;
 
-// BeatDetector beatDefector;
 ramp animationRamp;
 
 extern CRGBPalette16 currentPalette;
 extern TBlendType currentBlending;
 extern CRGB leds[];
-
-#define BUFFER_SIZE 64
-uint8_t buffer[BUFFER_SIZE];
 
 // Speed that the LEDs animate their brightness when first power on
 #define ON_RAMP_SPEED 1000
@@ -44,9 +37,6 @@ void prepareSpiSlave()
 void setup()
 {
   /*
-    beatDetector.setup();
-    beatDetector.setupADC();
-
     // TODO - this should blink, right?
     pinMode(LED_BUILTIN, OUTPUT);
   */
@@ -85,21 +75,25 @@ void animate()
     FastLED.setBrightness(brightness);
   }
 
-  FillLEDsFromPaletteColors(encoderPos * 2);
-  FastLED.show();
+  ChangePalettePeriodically();
+
+    static uint8_t startIndex = 0;
+    startIndex++;
+    
+    FillLEDsFromPaletteColors( startIndex);
+    FastLED.show();
 }
 
 void loop()
 {
   encoderHandler.tick();
+  // FIXME borked
+  //  display.update(); // TODO need to fix so it only updates if the state has actually changed
 
-  // // loopBeatDetector();
-  // display.update(); // TODO need to fix so it only updates if the state has actually changed
-
-  // if (animationDelay.update())
-  // {
-  //   animate();
-  // }
+  if (animationDelay.update())
+  {
+    animate();
+  }
 
   inputBus.update();
 }
