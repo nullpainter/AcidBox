@@ -12,31 +12,30 @@
 #define ROTARYMIN 0
 
 // Multiple of ROTARYSTEPS
-#define ROTARYMAX 128 
+#define ROTARYMAX 128
 
-struct EncoderState {
+struct EncoderState
+{
   uint8_t position;
   bool pressed;
   uint8_t midiControlNumber;
   uint8_t midiChannel;
   Button2 button;
-
-  bool transmitted; // TODO not using, consider removing
 };
 
-class EncoderHandler {
+class EncoderHandler
+{
 public:
   void setup();
   void tick();
   inline static EncoderState encoderState[NUM_ENCODERS];
 
 private:
-  uint8_t getValue(RotaryEncoder& encoder);
-  static void handleButtonPress(Button2& button);
+  uint8_t getValue(RotaryEncoder &encoder);
+  static void handleButtonPress(Button2 &button);
   RotaryEncoder encoders[NUM_ENCODERS] = {
-    RotaryEncoder(15, 16),
-    RotaryEncoder(1, 3),
-    RotaryEncoder(5, 6),
-    RotaryEncoder(8, 9)
-  };
+      RotaryEncoder(15, 16),
+      RotaryEncoder(1, 3),
+      RotaryEncoder(5, 6),
+      RotaryEncoder(8, 9)};
 };

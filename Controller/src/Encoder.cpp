@@ -16,19 +16,19 @@ void EncoderHandler::setup()
   pinMode(14, INPUT_PULLUP);
   pinMode(15, INPUT_PULLUP);
 
-  (&stateManager.encoderState[0])->button.begin(8, INPUT_PULLUP);
+  // (&stateManager.encoderState[0])->button.begin(8, INPUT_PULLUP);
   (&stateManager.encoderState[0])->midiChannel = DRUM_MIDI_CHAN;
   (&stateManager.encoderState[0])->midiControlNumber = CC_808_VOLUME;
 
-  (&stateManager.encoderState[1])->button.begin(7, INPUT_PULLUP);
+  // (&stateManager.encoderState[1])->button.begin(7, INPUT_PULLUP);
   (&stateManager.encoderState[1])->midiChannel = 1; // Global
   (&stateManager.encoderState[1])->midiControlNumber = CC_ANY_DELAY_FB;
 
-  (&stateManager.encoderState[2])->button.begin(9, INPUT_PULLUP);
+  // (&stateManager.encoderState[2])->button.begin(9, INPUT_PULLUP);
   (&stateManager.encoderState[2])->midiChannel = 1; // Global
   (&stateManager.encoderState[2])->midiControlNumber = CC_ANY_DELAY_TIME;
 
-  (&stateManager.encoderState[3])->button.begin(16, INPUT_PULLUP);
+  // (&stateManager.encoderState[3])->button.begin(16, INPUT_PULLUP);
   (&stateManager.encoderState[3])->midiChannel = 1; // Global
   (&stateManager.encoderState[3])->midiControlNumber = CC_ANY_REVERB_TIME;
 }
@@ -63,19 +63,21 @@ void EncoderHandler::tick()
   {
     auto state = stateManager.getEncoderState(i, true);
 
-    // Read current button state
-    state->button.loop();
+    // TEMP
+    // // Read current button state
+    // state->button.loop();
 
     // Read current rotary encoder value
     encoders[i].tick();
 
     // Get clamped encoder value
-    auto newPos = getValue(encoders[i]);
+    auto position = getValue(encoders[i]);
 
-    state->positionChanged = state->position != newPos;
-    state->position = newPos;
+    state->positionChanged = state->position != position;
+    state->position = position;
 
-    auto buttonPressed = state->button.wasPressed();
-    state->pressed = buttonPressed;
+    // TEMP
+    // auto buttonPressed = state->button.wasPressed();
+    // state->pressed = buttonPressed;
   }
 }

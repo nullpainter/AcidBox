@@ -49,13 +49,19 @@ void InputBus::transmit()
 
   // Send and receive encoder values
   sendEncoderValues();
-  receiveEncoderValues();
+  bool packetReceived = receiveEncoderValues();
 
   // Restore communication to the USB host shield
   digitalWrite(INPUT_BUS_SS, HIGH);
   digitalWrite(USB_HOST_SHIELD_SS, LOW);
 
   SPI.endTransaction();
+
+  // Set remote encoder state
+  if (packetReceived)
+  {
+    SetRemoteEncoderState();
+  }
 }
 
 void InputBus::sendEncoderValues()
@@ -65,13 +71,14 @@ void InputBus::sendEncoderValues()
   auto encoderState = stateManager.encoderState;
 
   // Send data
-  for (uint8_t i = 0; i < NUM_ENCODERS; i++)
+  for (uint8_t i = 0; i < EncoderStateManager::localNumEncoders; i++)
   {
-    transferAndWait(encoderState[i].position);
-    transferAndWait(encoderState[i].pressed);
-    transferAndWait(encoderState[i].midiControlNumber);
+    transferAndWait((&encoderState[i])->position);
+    transferAndWait((&encoderState[i])->pressed);
+    transferAndWait((&encoderState[i])->midiControlNumber);
 
-    encoderState[i].button.resetPressedState();
+    // TEMP
+    // (&encoderState[i])->button.resetPressedState();
   }
 
   transferAndWait(DATA_SEND_END);
@@ -79,9 +86,10 @@ void InputBus::sendEncoderValues()
 
 /**
  * Receives the values of the encoders from the visualiser module.
- * @throws None
+ *
+ * @return true if a packet has been received.
  */
-void InputBus::receiveEncoderValues()
+bool InputBus::receiveEncoderValues()
 {
   // Response is on next transfer
   transferAndWait(DATA_READ);
@@ -112,30 +120,27 @@ void InputBus::receiveEncoderValues()
     }
 
     inputBuffer[bytesReceived++] = response;
-
   } while (true);
 
   // FastlED disables interrupts when updating animations. This manifests itself in partial
   // packets, so we can just disregard them.
-  if (bytesReceived < responseByteCount)
-  {
-    return;
-  }
+  return bytesReceived == responseByteCount;
+}
 
+void InputBus::SetRemoteEncoderState()
+{
   // Populate remote encoder state
   uint8_t i = 0;
   for (uint8_t encoderIndex = 0; encoderIndex < EncoderStateManager::remoteNumEncoders; encoderIndex++)
   {
     auto state = stateManager.getEncoderState(encoderIndex, false);
-
     auto position = inputBuffer[i++];
-    auto pressed = inputBuffer[i++];
-    auto midiControLNumber = inputBuffer[i++];
 
     state->positionChanged = state->position != position;
-
     state->position = position;
-    state->pressed = pressed;
-    state->midiControlNumber = midiControLNumber;
+
+    state->pressed = inputBuffer[i++];
+    state->midiControlNumber = inputBuffer[i++];
+    state->midiChannel = inputBuffer[i++];
   }
 }

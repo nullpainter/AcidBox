@@ -29,20 +29,25 @@ void MidiHandler::sendEncoderControlChange()
   {
     auto state = &stateManager.encoderState[i];
 
-    // If the encoder has changed value, send a MIDI control change for the encoder to Acidbox
-    if (state->positionChanged)
+    if (!state->positionChanged)
     {
-      sendControlChange(state->midiControlNumber, state->position, state->midiChannel);
-      state->positionChanged = false;
+      continue;
     }
+
+    // If the encoder has changed value, send a MIDI control change for the encoder to Acidbox
+    sendControlChange(state->midiControlNumber, state->position, state->midiChannel);
+
+    state->positionChanged = false;
   }
 }
 
 void MidiHandler::sendProgramChange(uint8_t program, uint8_t channel)
 {
-
 #ifdef DEBUG
-  printf("Program change: %d %d\n", program, channel);
+  Serial.print("Program change: ");
+  Serial.print(program);
+  Serial.print(" ");
+  Serial.println(channel);
 #endif
 
 #ifdef ENABLE_MIDI
@@ -55,7 +60,6 @@ void MidiHandler::sendControlChange(uint8_t number, uint8_t value, uint8_t chann
 
 #ifdef DEBUG
   Serial.print("Control change:");
-
   Serial.print(number);
   Serial.print(" ");
   Serial.print(value);

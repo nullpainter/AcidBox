@@ -7,8 +7,6 @@
 
 #include "EncoderStateManager.h"
 
-#define NUM_ENCODERS 4
-
 #define ROTARYSTEPS 4
 #define ROTARYMIN 0
 
@@ -31,7 +29,7 @@ private:
   uint8_t getValue(RotaryEncoder &encoder);
   static void handleButtonPress(Button2 &button);
 
-  RotaryEncoder encoders[NUM_ENCODERS] = {
+  RotaryEncoder encoders[EncoderStateManager::localNumEncoders] = {
       RotaryEncoder(4, 2),
       RotaryEncoder(3, 6),
       RotaryEncoder(18, 19),

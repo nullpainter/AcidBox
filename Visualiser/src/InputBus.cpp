@@ -21,8 +21,6 @@ void InputBus::update()
 volatile uint8_t j = 0;
 volatile uint8_t i = 0;
 
-bool dummyVal;
-
 // SPI interrupt routine
 ISR(SPI_STC_vect)
 {
@@ -53,7 +51,6 @@ ISR(SPI_STC_vect)
     // Send end read marker once we've sent all encoder values
     if (encoderIndex >= NUM_ENCODERS)
     {
-      dummyVal = false;
       SPDR = DATA_READ_END;
       return;
     }
@@ -69,6 +66,9 @@ ISR(SPI_STC_vect)
       break;
     case 2:
       SPDR = state->midiControlNumber;
+      break;
+    case 3:
+      SPDR = state->midiChannel;
       break;
     }
 

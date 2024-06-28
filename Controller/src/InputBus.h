@@ -30,10 +30,14 @@ private:
 
   /**
    * Receives the values of the encoders from the visualiser module.
+   *
+   * @return true if a packet has been received.
    */
-  void receiveEncoderValues();
+  bool receiveEncoderValues();
 
-  const uint8_t bytesPerEncoder = 3;
+  void SetRemoteEncoderState();
+
+  const uint8_t bytesPerEncoder = 4;
 
   // Number of bytes sent by the visualiser in a single packet
   const uint8_t responseByteCount = bytesPerEncoder * EncoderStateManager::remoteNumEncoders;

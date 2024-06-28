@@ -11,28 +11,21 @@
 
 void EncoderHandler::setup()
 {
-
-  // Enocder pins
-  // TODO confirm if necessary
-  pinMode(8, INPUT_PULLUP);
-  pinMode(9, INPUT_PULLUP);
-
   encoderState[0].button.begin(0, INPUT_PULLUP);
   encoderState[0].midiChannel = DRUM_MIDI_CHAN;
-  encoderState[0].midiControlNumber = CC_808_VOLUME;
+  encoderState[0].midiControlNumber = CC_808_PITCH;
 
   encoderState[1].button.begin(2, INPUT_PULLUP);
   encoderState[1].midiChannel = DRUM_MIDI_CHAN;
-  encoderState[1].midiControlNumber = CC_808_DISTORTION;  
+  encoderState[1].midiControlNumber = CC_808_DISTORTION;
 
   encoderState[2].button.begin(4, INPUT_PULLUP);
   encoderState[2].midiChannel = DRUM_MIDI_CHAN;
-  encoderState[2].midiControlNumber = CC_808_BD_TONE;  
+  encoderState[2].midiControlNumber = CC_808_BD_TONE;
 
   encoderState[3].button.begin(7, INPUT_PULLUP);
   encoderState[3].midiChannel = SYNTH1_MIDI_CHAN;
-  encoderState[3].midiControlNumber = CC_303_SATURATOR;  
-
+  encoderState[3].midiControlNumber = CC_303_SATURATOR;
 
   for (uint8_t i = 0; i < NUM_ENCODERS; i++)
   {

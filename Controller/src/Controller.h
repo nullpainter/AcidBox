@@ -4,7 +4,11 @@
 #include <midi_config.h>
 
 // #define DEBUG
+
+// Enable MIDI only if debug output isn't enabled
+#ifndef DEBUG
 #define ENABLE_MIDI
+#endif
 
 // TODO move this stuff to the midi class
 

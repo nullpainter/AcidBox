@@ -8,7 +8,7 @@ struct EncoderState
   bool pressed;
   uint8_t midiControlNumber;
   uint8_t midiChannel;
-  Button2 button;
+  // Button2 button; // TEMP
 
   // If the encoder's position has changed from its previous state
   bool positionChanged;

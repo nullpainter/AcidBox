@@ -106,7 +106,7 @@ inline void handleCC(uint8_t inChannel, uint8_t cc_number, uint8_t cc_value) {
 
 void handleProgramChange(uint8_t inChannel, uint8_t number) {
 
-  //DEBF("Program change: channel %d, number %d\n", inChannel, number);
+  DEBF("Program change: channel %d, number %d\n", inChannel, number);
 
   if (inChannel == DRUM_MIDI_CHAN) {
     return;
