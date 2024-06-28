@@ -2,6 +2,7 @@
 #include <RotaryEncoder.h>
 #include <NoDelay.h>
 
+#include "EncoderStateManager.h"
 #include "InputBus.h"
 #include "Encoder.h"
 #include "Devices.h"
@@ -16,8 +17,6 @@ byte transferAndWait(const uint8_t what)
 
 void InputBus::setup()
 {
-  // power_timer0_disable();
-
   spiDelay = noDelay(spiDelayMs);
 
   // Configure SS pins
@@ -31,19 +30,17 @@ void InputBus::setup()
   SPI.begin();
 }
 
-void InputBus::update(EncoderState encoderState[])
+void InputBus::update()
 {
-
   // Delay after each packet to give the slave time to to process
   if (spiDelay.update())
   {
-    transmit(encoderState);
+    transmit();
   }
 }
 
-void InputBus::transmit(EncoderState encoderState[])
+void InputBus::transmit()
 {
-
   SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 
   // Enable communication with the input bus
@@ -51,7 +48,7 @@ void InputBus::transmit(EncoderState encoderState[])
   digitalWrite(USB_HOST_SHIELD_SS, HIGH);
 
   // Send and receive encoder values
-  sendEncoderValues(encoderState);
+  sendEncoderValues();
   receiveEncoderValues();
 
   // Restore communication to the USB host shield
@@ -61,23 +58,18 @@ void InputBus::transmit(EncoderState encoderState[])
   SPI.endTransaction();
 }
 
-extern MidiHandler midiHandler; // FIXME pass this in
-
-void InputBus::sendEncoderValues(EncoderState encoderState[])
+void InputBus::sendEncoderValues()
 {
   // Send header
   transferAndWait(DATA_SEND_START);
+  auto encoderState = stateManager.encoderState;
 
   // Send data
   for (uint8_t i = 0; i < NUM_ENCODERS; i++)
   {
-    transferAndWait(i);
     transferAndWait(encoderState[i].position);
     transferAndWait(encoderState[i].pressed);
     transferAndWait(encoderState[i].midiControlNumber);
-
-    // TODO is this still required?
-    // encoderState[i].transmitted = true;
 
     encoderState[i].button.resetPressedState();
   }
@@ -85,44 +77,65 @@ void InputBus::sendEncoderValues(EncoderState encoderState[])
   transferAndWait(DATA_SEND_END);
 }
 
+/**
+ * Receives the values of the encoders from the visualiser module.
+ * @throws None
+ */
 void InputBus::receiveEncoderValues()
 {
   // Response is on next transfer
   transferAndWait(DATA_READ);
 
-  // TEMP
-  uint8_t numBytes = 0;
+  uint8_t bytesReceived = 0;
 
   do
   {
-    uint8_t response = transferAndWait(DATA_READ);
-    if (numBytes >= INPUT_BUFFER_SIZE)
+    auto response = transferAndWait(DATA_READ);
+
+    // Ignore echoed data from the controller
+    if (response == DATA_READ)
     {
-      Serial.println("Buffer overrun");
+      continue;
+    }
+
+    // Break when we have all bytes
+    if (response == DATA_READ_END)
+    {
       break;
     }
 
-    inputBuffer[numBytes++] = response;
-
-    // Ignore echoed values and end values
-    if (response == DATA_READ || response == DATA_READ_END)
+    // Verify that we haven't received more bytes than the buffer can hold
+    if (bytesReceived >= inputBufferSize)
     {
+      Serial.println(F("Buffer overrun"));
       break;
     }
+
+    inputBuffer[bytesReceived++] = response;
 
   } while (true);
 
-  // FIXME TEMP - tidy plz
-  uint8_t responseSize = 17;
-  if (numBytes < responseSize)  // Partial packet due to FastLED
-    return;
-
-  for (uint8_t i = 0; i < numBytes; i++)
+  // FastlED disables interrupts when updating animations. This manifests itself in partial
+  // packets, so we can just disregard them.
+  if (bytesReceived < responseByteCount)
   {
-
-    Serial.print(inputBuffer[i], HEX);
-    Serial.print(" ");
+    return;
   }
 
-  Serial.println();
+  // Populate remote encoder state
+  uint8_t i = 0;
+  for (uint8_t encoderIndex = 0; encoderIndex < EncoderStateManager::remoteNumEncoders; encoderIndex++)
+  {
+    auto state = stateManager.getEncoderState(encoderIndex, false);
+
+    auto position = inputBuffer[i++];
+    auto pressed = inputBuffer[i++];
+    auto midiControLNumber = inputBuffer[i++];
+
+    state->positionChanged = state->position != position;
+
+    state->position = position;
+    state->pressed = pressed;
+    state->midiControlNumber = midiControLNumber;
+  }
 }

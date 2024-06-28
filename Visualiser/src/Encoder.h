@@ -34,9 +34,9 @@ private:
   uint8_t getValue(RotaryEncoder& encoder);
   static void handleButtonPress(Button2& button);
   RotaryEncoder encoders[NUM_ENCODERS] = {
-    RotaryEncoder(8, 9),
-    RotaryEncoder(5, 6),
+    RotaryEncoder(15, 16),
     RotaryEncoder(1, 3),
-    RotaryEncoder(15, 16)
+    RotaryEncoder(5, 6),
+    RotaryEncoder(8, 9)
   };
 };

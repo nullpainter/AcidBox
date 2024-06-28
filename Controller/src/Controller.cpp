@@ -1,19 +1,22 @@
 #include <SPI.h>
-#include <hidboot.h>
-#include <usbhub.h>
-#include "ButtonParser.h"
+// #include <hidboot.h>
+// #include <usbhub.h>
+// #include "ButtonParser.h"
 #include "Controller.h"
 #include "Encoder.h"
+#include "EncoderStateManager.h"
 #include "MidiHandler.h"
 #include "InputBus.h"
 
-MidiHandler midiHandler;
-EncoderHandler encoderHandler;
-ButtonParser buttonParser;
-USB usb;
-InputBus inputBus;
+EncoderStateManager encoderStateManager;
+MidiHandler midiHandler(encoderStateManager);
+EncoderHandler encoderHandler(encoderStateManager);
+InputBus inputBus(encoderStateManager);
+// ButtonParser buttonParser;
 
-HIDBoot<USB_HID_PROTOCOL_KEYBOARD> hidKeyboard(&usb);
+// TODO move these to the ESP32
+// USB usb;
+// HIDBoot<USB_HID_PROTOCOL_KEYBOARD> hidKeyboard(&usb);
 
 void setup()
 {
@@ -24,6 +27,7 @@ void setup()
   encoderHandler.setup();
   inputBus.setup();
   midiHandler.setup();
+
   /*
     if (usb.Init() == -1) {
       Serial.begin(115200);
@@ -37,8 +41,9 @@ void setup()
 void loop()
 {
 
-  encoderHandler.tick(&midiHandler);
+  encoderHandler.tick();
+  inputBus.update();
   midiHandler.tick();
-  // usb.Task(); TEMP
-  inputBus.update(encoderHandler.encoderState);
+
+  // // usb.Task(); TEMP
 }

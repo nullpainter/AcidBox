@@ -5,37 +5,35 @@
 #include "Controller.h"
 #include "MidiHandler.h"
 
+#include "EncoderStateManager.h"
+
 #define NUM_ENCODERS 4
 
 #define ROTARYSTEPS 4
 #define ROTARYMIN 0
 
 // Multiple of ROTARYSTEPS
-#define ROTARYMAX 128 
+#define ROTARYMAX 128
 
-struct EncoderState {
-  uint8_t position;
-  bool pressed;
-  uint8_t midiControlNumber;
-  uint8_t midiChannel;
-  Button2 button;
-
-  bool transmitted; // TODO unused = remove?
-};
-
-class EncoderHandler {
+class EncoderHandler
+{
 public:
+  EncoderHandler(EncoderStateManager &stateManager) : stateManager(stateManager)
+  {
+  }
+
   void setup();
-  void tick(MidiHandler* midiHandler);
-  EncoderState encoderState[NUM_ENCODERS];
+  void tick();
 
 private:
-  uint8_t getValue(RotaryEncoder& encoder);
-  static void handleButtonPress(Button2& button);
+  EncoderStateManager &stateManager;
+
+  uint8_t getValue(RotaryEncoder &encoder);
+  static void handleButtonPress(Button2 &button);
+
   RotaryEncoder encoders[NUM_ENCODERS] = {
-    RotaryEncoder(4, 2),
-    RotaryEncoder(3, 6),
-    RotaryEncoder(18, 19),
-    RotaryEncoder(15, 14)
-  };
+      RotaryEncoder(4, 2),
+      RotaryEncoder(3, 6),
+      RotaryEncoder(18, 19),
+      RotaryEncoder(15, 14)};
 };

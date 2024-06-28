@@ -16,27 +16,21 @@ void EncoderHandler::setup()
   pinMode(14, INPUT_PULLUP);
   pinMode(15, INPUT_PULLUP);
 
-  encoderState[0].button.begin(8, INPUT_PULLUP);
-  encoderState[0].midiChannel = DRUM_MIDI_CHAN;
-  encoderState[0].midiControlNumber = CC_808_VOLUME;
+  (&stateManager.encoderState[0])->button.begin(8, INPUT_PULLUP);
+  (&stateManager.encoderState[0])->midiChannel = DRUM_MIDI_CHAN;
+  (&stateManager.encoderState[0])->midiControlNumber = CC_808_VOLUME;
 
-  encoderState[1].button.begin(7, INPUT_PULLUP);
-  encoderState[1].midiChannel = 1; // Global
-  encoderState[1].midiControlNumber = CC_ANY_DELAY_FB;
+  (&stateManager.encoderState[1])->button.begin(7, INPUT_PULLUP);
+  (&stateManager.encoderState[1])->midiChannel = 1; // Global
+  (&stateManager.encoderState[1])->midiControlNumber = CC_ANY_DELAY_FB;
 
-  encoderState[2].button.begin(9, INPUT_PULLUP);
-  encoderState[2].midiChannel = 1; // Global
-  encoderState[2].midiControlNumber = CC_ANY_DELAY_TIME;
+  (&stateManager.encoderState[2])->button.begin(9, INPUT_PULLUP);
+  (&stateManager.encoderState[2])->midiChannel = 1; // Global
+  (&stateManager.encoderState[2])->midiControlNumber = CC_ANY_DELAY_TIME;
 
-  encoderState[3].button.begin(16, INPUT_PULLUP);
-  encoderState[3].midiChannel = 1; // Global
-  encoderState[3].midiControlNumber = CC_ANY_REVERB_TIME;
-
-  for (uint8_t i = 0; i < NUM_ENCODERS; i++)
-  {
-    encoderState[i].position = MIN_MIDI_VAL;
-    encoderState[i].pressed = false;
-  }
+  (&stateManager.encoderState[3])->button.begin(16, INPUT_PULLUP);
+  (&stateManager.encoderState[3])->midiChannel = 1; // Global
+  (&stateManager.encoderState[3])->midiControlNumber = CC_ANY_REVERB_TIME;
 }
 
 // FIXME set this to be isClamped() instead and set transmitted=false when go too high or too low
@@ -49,13 +43,13 @@ uint8_t EncoderHandler::getValue(RotaryEncoder &encoder)
   if (newPos < ROTARYMIN)
   {
     encoder.setPosition(ROTARYMIN / ROTARYSTEPS);
-    return ROTARYMIN;
+    newPos = ROTARYMIN;
   }
 
   if (newPos > ROTARYMAX)
   {
     encoder.setPosition(ROTARYMAX / ROTARYSTEPS);
-    return ROTARYMAX;
+    newPos = ROTARYMAX;
   }
 
   // Encoder values are from 0-128 instead of 0-127 in order to result in an even multiple of
@@ -63,35 +57,25 @@ uint8_t EncoderHandler::getValue(RotaryEncoder &encoder)
   return constrain(newPos, MIN_MIDI_VAL, MAX_MIDI_VAL);
 }
 
-void EncoderHandler::tick(MidiHandler *midiHandler) // TODO pass this by reference
-{ 
-
-  for (uint8_t i = 0; i < NUM_ENCODERS; i++)
+void EncoderHandler::tick()
+{
+  for (uint8_t i = 0; i < EncoderStateManager::localNumEncoders; i++)
   {
-    EncoderState *state = &encoderState[i];
+    auto state = stateManager.getEncoderState(i, true);
+
+    // Read current button state
     state->button.loop();
 
-    // Get clamped encoder value
+    // Read current rotary encoder value
     encoders[i].tick();
-    uint8_t newPos = getValue(encoders[i]);
 
-    // If the encoder has changed value, send a MIDI control change for the encoder
-    if (state->position != newPos)
-    {
+    // Get clamped encoder value
+    auto newPos = getValue(encoders[i]);
 
-      state->position = newPos;
-      state->transmitted = false;
+    state->positionChanged = state->position != newPos;
+    state->position = newPos;
 
-      // Send MIDI message to AcidBox
-      midiHandler->sendControlChange(state->midiControlNumber, state->position, state->midiChannel);
-    }
-
-    // Transmit encoder data if the button was pressed
-    bool buttonPressed = state->button.wasPressed();
-    if (state->pressed != buttonPressed)
-    {
-      state->pressed = buttonPressed;
-      state->transmitted = false;
-    }
+    auto buttonPressed = state->button.wasPressed();
+    state->pressed = buttonPressed;
   }
 }

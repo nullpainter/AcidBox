@@ -3,8 +3,10 @@
 // Copied from AcidBox - TODO move to lib
 #include <midi_config.h>
 
-#define DEBUG
-//#define ENABLE_MIDI
+// #define DEBUG
+#define ENABLE_MIDI
+
+// TODO move this stuff to the midi class
 
 // MIDI channels for keyup and keydown events
 #define KEY_DOWN_CHANNEL 1

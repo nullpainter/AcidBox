@@ -34,7 +34,6 @@ void Display::update() {
       return;
     }
 
-    uint8_t encoderIndex = InputBus::buffer[i++];
     uint8_t position = InputBus::buffer[i++];
 
     uint8_t pressed = InputBus::buffer[i++];

@@ -47,13 +47,6 @@ ISR(SPI_STC_vect)
     break;
   case DATA_READ:
 
-    // TODO comment
-    if (!dummyVal)
-    {
-      dummyVal = true;
-      return;
-    }
-
     uint8_t encoderDataIndex = InputBus::outputBufferPos % BYTES_PER_ENCODER;
     uint8_t encoderIndex = floor(InputBus::outputBufferPos / BYTES_PER_ENCODER);
 
@@ -69,15 +62,12 @@ ISR(SPI_STC_vect)
     switch (encoderDataIndex)
     {
     case 0:
-      SPDR = encoderIndex;
-      break;
-    case 1:
       SPDR = state->position;
       break;
-    case 2:
+    case 1:
       SPDR = state->pressed;
       break;
-    case 3:
+    case 2:
       SPDR = state->midiControlNumber;
       break;
     }
@@ -85,12 +75,6 @@ ISR(SPI_STC_vect)
     InputBus::outputBufferPos++;
     break;
   default:
-
-    // if (InputBus::packetReady) Serial.println();
-
-    // if (data == DATA_READ)
-    // {
-    //   sendMode = false;
 
     // // Populate read buffer - add payload to buffer if room
     if (InputBus::bufferPos < BUFFER_SIZE)
